@@ -561,6 +561,50 @@
       .category-name{font-size:16px;}
       .category-thumb-empty{font-size:26px;}
     }
+    @media (min-width: 700px) and (max-width: 980px){
+      .hero-controls{
+        padding:8px 0;
+      }
+      .hero-controls-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:10px;
+      }
+      .hero-search-box{
+        border-radius:8px;
+        padding:6px 9px;
+        gap:8px;
+      }
+      .hero-search-icon{
+        width:14px;
+        height:14px;
+        border-width:2px;
+      }
+      .hero-search-icon::after{
+        width:7px;
+        height:2px;
+        right:-5px;
+        bottom:-2px;
+      }
+      .hero-search-input{
+        font-size:12px;
+      }
+      .hero-register-link{
+        border-radius:8px;
+        padding:7px 10px;
+        font-size:13px;
+      }
+      .category-dropdown-trigger{
+        border-radius:8px;
+        padding:7px 10px;
+        gap:6px;
+      }
+      .category-dropdown-num,
+      .category-dropdown-sep,
+      .category-dropdown-name,
+      .category-dropdown-caret{
+        font-size:13px;
+      }
+    }
   </style>
 </head>
 <body>
