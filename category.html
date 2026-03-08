@@ -452,7 +452,7 @@
         .map((cat, idx) => {
           const num = String(idx + 1).padStart(2, "0");
           const selected = cat === currentCategory ? "selected" : "";
-          return `<option value="${escapeHtml(cat)}" ${selected}>${num}｜${escapeHtml(cat)}</option>`;
+          return `<option value="${escapeHtml(cat)}" ${selected}>${num} ${escapeHtml(cat)}</option>`;
         })
         .join("");
     }
@@ -593,7 +593,7 @@
 
     function formatCategoryLabel(category, index) {
       if (!category || index < 0) return category || "";
-      return `${String(index + 1).padStart(2, "0")}｜${category}`;
+      return `${String(index + 1).padStart(2, "0")} ${category}`;
     }
 
     function escapeHtml(str){
