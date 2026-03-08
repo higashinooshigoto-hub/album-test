@@ -258,13 +258,6 @@
       font-weight:800;
       flex:0 0 auto;
     }
-    .category-dropdown-sep{
-      font-size:16px;
-      line-height:1;
-      font-weight:500;
-      opacity:.9;
-      flex:0 0 auto;
-    }
     .category-dropdown-name{
       font-size:16px;
       line-height:1;
@@ -353,13 +346,6 @@
       line-height:1;
       font-weight:800;
       flex:0 0 auto;
-    }
-    .category-sep{
-      font-size:22px;
-      line-height:1;
-      font-weight:500;
-      flex:0 0 auto;
-      opacity:.9;
     }
     .category-name{
       font-size:16px;
@@ -583,7 +569,6 @@
         gap:5px;
       }
       .category-dropdown-num,
-      .category-dropdown-sep,
       .category-dropdown-name,
       .category-dropdown-caret{
         font-size:12px;
@@ -598,10 +583,10 @@
       .gallery-grid{grid-template-columns:1fr; gap:14px;}
       .category-head{
         display:grid;
-        grid-template-columns:auto auto;
+        grid-template-columns:auto;
         grid-template-areas:
-          "num sep"
-          "name name";
+          "num"
+          "name";
         align-items:end;
         column-gap:0;
         row-gap:4px;
@@ -610,10 +595,6 @@
       }
       .category-number{
         grid-area:num;
-        font-size:16px;
-      }
-      .category-sep{
-        grid-area:sep;
         font-size:16px;
       }
       .category-name{
@@ -665,7 +646,6 @@
         gap:6px;
       }
       .category-dropdown-num,
-      .category-dropdown-sep,
       .category-dropdown-name,
       .category-dropdown-caret{
         font-size:13px;
@@ -738,7 +718,6 @@
           <div id="categoryDropdown" class="category-dropdown">
             <button id="categoryDropdownTrigger" class="category-dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
               <span id="categoryDropdownNum" class="category-dropdown-num">--</span>
-              <span class="category-dropdown-sep">|</span>
               <span id="categoryDropdownName" class="category-dropdown-name">カテゴリなし</span>
               <span class="category-dropdown-caret" aria-hidden="true">▼</span>
             </button>
@@ -882,7 +861,6 @@
         return `
           <button class="category-dropdown-item ${cat === currentCategory ? "active" : ""}" data-cat="${encodedCategory}" type="button" role="option">
             <span class="category-dropdown-num">${num}</span>
-            <span class="category-dropdown-sep">|</span>
             <span class="category-dropdown-name">${escapeHtml(cat)}</span>
           </button>
         `;
@@ -917,7 +895,6 @@
           <button class="category-card ${cat === currentCategory ? "active" : ""}" data-cat="${encodedCategory}">
             <div class="category-head">
               <span class="category-number">${num}</span>
-              <span class="category-sep">|</span>
               <span class="category-name">${escapeHtml(cat)}</span>
             </div>
             ${latest
@@ -1083,7 +1060,7 @@
 
     function formatCategoryLabel(category, index) {
       if (!category || index < 0) return category || "";
-      return `${String(index + 1).padStart(2, "0")}｜${category}`;
+      return `${String(index + 1).padStart(2, "0")} ${category}`;
     }
 
     function buildLatestByCategory() {
