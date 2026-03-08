@@ -97,12 +97,10 @@
     }
     .hero{
       background:#f2b404;
-      padding:20px 0;
+      padding:16px 0 14px;
       border-bottom:1px solid rgba(0,0,0,.12);
     }
     .hero-inner{
-      position:relative;
-      min-height:116px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -112,24 +110,29 @@
       display:flex;
       flex-direction:column;
       justify-content:center;
-      min-height:116px;
       transform:scale(0.8);
       transform-origin:center center;
     }
+    .hero-controls{
+      background:#78695c;
+      padding:12px 0;
+    }
+    .hero-controls-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:18px;
+      align-items:center;
+    }
     .hero-search{
-      position:absolute;
-      left:0;
-      top:50%;
-      transform:translateY(-50%);
-      width:min(300px,44vw);
+      width:100%;
       display:flex;
-      justify-content:flex-start;
+      justify-content:center;
     }
     .hero-search-box{
-      width:80%;
+      width:100%;
       background:#ffffff;
-      border-radius:14px;
-      padding:10px 14px;
+      border-radius:10px;
+      padding:9px 12px;
       display:flex;
       align-items:center;
       gap:12px;
@@ -162,7 +165,7 @@
       padding:0;
       background:transparent;
       color:#171a1f;
-      font-size:12px;
+      font-size:13px;
       line-height:1.2;
       font-weight:600;
       outline:none;
@@ -176,17 +179,33 @@
     .hero-search-input:focus{
       box-shadow:none;
     }
-    .hero-toolbar{
-      position:absolute;
-      right:0;
-      top:50%;
-      transform:translateY(-50%);
-      width:min(300px,44vw);
+    .hero-register{
+      width:100%;
       display:flex;
-      justify-content:flex-end;
+      justify-content:center;
+    }
+    .hero-register-link{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      background:#ffffff;
+      color:#171a1f;
+      border-radius:10px;
+      padding:9px 12px;
+      font-size:16px;
+      line-height:1;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .hero-toolbar{
+      width:100%;
+      display:flex;
+      justify-content:center;
     }
     .hero-toolbar .category-dropdown{
-      width:80%;
+      width:100%;
     }
     .hero h1{
       margin:0;
@@ -218,7 +237,7 @@
     }
     .category-dropdown{
       position:relative;
-      width:min(360px, 92vw);
+      width:100%;
     }
     .category-dropdown-trigger{
       width:100%;
@@ -521,29 +540,13 @@
       .brand-logo-fallback .logo-mark{width:34px; height:34px;}
       .brand-logo-fallback .logo-mark::before{left:7px; top:4px; width:10px; height:10px;}
       .brand-logo-fallback .logo-mark::after{left:6px; bottom:5px; width:15px; height:11px;}
-      .hero{padding:18px 0 14px;}
-      .hero-inner{
-        min-height:0;
-        display:flex;
-        flex-direction:column;
-        gap:12px;
+      .hero{padding:14px 0 10px;}
+      .hero-main{transform:scale(0.9);}
+      .hero-controls{padding:10px 0;}
+      .hero-controls-grid{
+        grid-template-columns:1fr;
+        gap:10px;
       }
-      .hero-toolbar{
-        position:static;
-        transform:none;
-        width:min(360px,92vw);
-        justify-content:center;
-      }
-      .hero-search{
-        position:static;
-        transform:none;
-        width:min(360px,92vw);
-        justify-content:center;
-        order:2;
-      }
-      .hero-search-box{width:80%;}
-      .hero-main{min-height:0; order:1;}
-      .hero-toolbar{order:3;}
       .hero h1{font-size:42px;}
       .hero p{font-size:20px; margin-top:6px;}
       .category-zone{padding:22px 0 28px;}
@@ -573,15 +576,22 @@
     </div>
     <div class="hero">
       <div class="wrap hero-inner">
+        <div class="hero-main">
+          <h1>トッピング図鑑</h1>
+          <p>Explore real topping ideas.</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero-controls">
+      <div class="wrap hero-controls-grid">
         <div class="hero-search">
           <div class="hero-search-box">
             <button id="heroSearchButton" class="hero-search-icon" type="button" aria-label="検索"></button>
             <input id="heroSearchInput" class="hero-search-input" type="search" placeholder="キーワードを入力してください" aria-label="画像検索">
           </div>
         </div>
-        <div class="hero-main">
-          <h1>トッピング図鑑</h1>
-          <p>Explore real topping ideas.</p>
+        <div class="hero-register">
+          <a class="hero-register-link" href="./admin">画像を登録する</a>
         </div>
         <div class="hero-toolbar">
           <div id="categoryDropdown" class="category-dropdown">
