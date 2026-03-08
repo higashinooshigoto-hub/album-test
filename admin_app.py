@@ -3,10 +3,15 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+import base64
 import json
 import io
+import os
 import streamlit as st
 from PIL import Image
+from urllib import error as urlerror
+from urllib import parse as urlparse
+from urllib import request as urlrequest
 try:
     import pytesseract
     OCR_AVAILABLE = True
@@ -226,6 +231,181 @@ def split_description_to_tag_inputs(description: str, count: int = 5) -> list[st
     tags = tags[:count]
     return tags + [""] * (count - len(tags))
 
+def get_secret_value(*keys: str) -> str:
+    try:
+        current = st.secrets
+        for key in keys:
+            current = current[key]
+        return str(current).strip()
+    except Exception:
+        return ""
+
+def get_github_sync_config() -> dict:
+    token = (
+        os.getenv("GITHUB_TOKEN", "").strip()
+        or get_secret_value("GITHUB_TOKEN")
+        or get_secret_value("github", "token")
+    )
+    repo = (
+        os.getenv("GITHUB_REPO", "").strip()
+        or get_secret_value("GITHUB_REPO")
+        or get_secret_value("github", "repo")
+    )
+    branch = (
+        os.getenv("GITHUB_BRANCH", "").strip()
+        or get_secret_value("GITHUB_BRANCH")
+        or get_secret_value("github", "branch")
+        or "main"
+    )
+    enabled_raw = (
+        os.getenv("GITHUB_SYNC_ENABLED", "").strip()
+        or get_secret_value("GITHUB_SYNC_ENABLED")
+        or get_secret_value("github", "enabled")
+    ).lower()
+    enabled = enabled_raw in {"1", "true", "yes", "on"} if enabled_raw else bool(token and repo)
+    if not enabled or not token or not repo:
+        return {}
+    return {
+        "token": token,
+        "repo": repo,
+        "branch": branch,
+    }
+
+def normalize_repo_path(path: str) -> str:
+    normalized = (path or "").replace("\\", "/").strip()
+    normalized = normalized.lstrip("./")
+    return normalized
+
+def github_api_request(method: str, path: str, token: str, payload: dict | None = None) -> tuple[int, dict]:
+    url = f"https://api.github.com{path}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "topping-zukan-sync",
+    }
+    body = None
+    if payload is not None:
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+
+    req = urlrequest.Request(url=url, data=body, headers=headers, method=method)
+    try:
+        with urlrequest.urlopen(req, timeout=25) as res:
+            text = res.read().decode("utf-8")
+            data = json.loads(text) if text else {}
+            return res.getcode(), data
+    except urlerror.HTTPError as e:
+        text = e.read().decode("utf-8", errors="ignore")
+        try:
+            data = json.loads(text) if text else {}
+        except json.JSONDecodeError:
+            data = {"message": text}
+        return e.code, data
+    except Exception as e:
+        return 0, {"message": str(e)}
+
+def github_get_file_sha(repo_path: str, config: dict) -> str:
+    encoded_path = urlparse.quote(repo_path, safe="/")
+    encoded_branch = urlparse.quote(config["branch"], safe="")
+    code, data = github_api_request(
+        "GET",
+        f"/repos/{config['repo']}/contents/{encoded_path}?ref={encoded_branch}",
+        config["token"],
+    )
+    if code == 200 and isinstance(data, dict):
+        return str(data.get("sha", ""))
+    if code == 404:
+        return ""
+    raise RuntimeError(data.get("message", f"GitHub API error ({code})"))
+
+def github_upsert_file(repo_path: str, content_bytes: bytes, commit_message: str, config: dict) -> None:
+    encoded_path = urlparse.quote(repo_path, safe="/")
+    sha = github_get_file_sha(repo_path, config)
+    payload = {
+        "message": commit_message,
+        "content": base64.b64encode(content_bytes).decode("ascii"),
+        "branch": config["branch"],
+    }
+    if sha:
+        payload["sha"] = sha
+
+    code, data = github_api_request(
+        "PUT",
+        f"/repos/{config['repo']}/contents/{encoded_path}",
+        config["token"],
+        payload,
+    )
+    if code not in (200, 201):
+        raise RuntimeError(data.get("message", f"GitHub API error ({code})"))
+
+def github_delete_file(repo_path: str, commit_message: str, config: dict) -> None:
+    sha = github_get_file_sha(repo_path, config)
+    if not sha:
+        return
+    encoded_path = urlparse.quote(repo_path, safe="/")
+    payload = {
+        "message": commit_message,
+        "sha": sha,
+        "branch": config["branch"],
+    }
+    code, data = github_api_request(
+        "DELETE",
+        f"/repos/{config['repo']}/contents/{encoded_path}",
+        config["token"],
+        payload,
+    )
+    if code not in (200, 202):
+        raise RuntimeError(data.get("message", f"GitHub API error ({code})"))
+
+def sync_changes_to_github(changed_paths: list[str], deleted_paths: list[str], action_label: str) -> tuple[bool, str]:
+    config = get_github_sync_config()
+    if not config:
+        return False, "GitHub同期は未設定です（ローカル保存のみ）。"
+
+    changed_repo_paths = []
+    deleted_repo_paths = []
+    seen_changed = set()
+    seen_deleted = set()
+
+    for path in changed_paths:
+        rp = normalize_repo_path(path)
+        if not rp or rp in seen_changed:
+            continue
+        seen_changed.add(rp)
+        changed_repo_paths.append(rp)
+
+    for path in deleted_paths:
+        rp = normalize_repo_path(path)
+        if not rp or rp == "data.js" or rp in seen_deleted:
+            continue
+        seen_deleted.add(rp)
+        deleted_repo_paths.append(rp)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        for repo_path in changed_repo_paths:
+            abs_path = BASE_DIR / repo_path
+            if not abs_path.exists() or not abs_path.is_file():
+                continue
+            github_upsert_file(
+                repo_path,
+                abs_path.read_bytes(),
+                f"{action_label} {timestamp} - update {repo_path}",
+                config,
+            )
+
+        for repo_path in deleted_repo_paths:
+            github_delete_file(
+                repo_path,
+                f"{action_label} {timestamp} - delete {repo_path}",
+                config,
+            )
+    except Exception as e:
+        return False, f"GitHub同期エラー: {e}"
+
+    return True, f"GitHub同期完了: {config['repo']} ({config['branch']})"
+
 # ---------- UI ----------
 st.markdown(
     '<h1 style="margin:0;">トッピング図鑑 <span style="font-size:70%;">（登録画面）</span></h1>',
@@ -234,6 +414,11 @@ st.markdown(
 
 st.markdown("写真登録・検索・修正・削除をこの画面で行います。")
 ensure_paths()
+sync_config = get_github_sync_config()
+if sync_config:
+    st.caption(f"GitHub同期: ON（{sync_config['repo']} / {sync_config['branch']}）")
+else:
+    st.caption("GitHub同期: OFF（Secretsまたは環境変数が未設定）")
 
 tab_register, tab_manage = st.tabs(["写真を登録", "検索・修正・削除"])
 
@@ -316,12 +501,21 @@ with tab_register:
             )
             saved_paths.append(img_path)
         write_records(records)
+        sync_ok, sync_message = sync_changes_to_github(
+            ["./data.js"] + saved_paths,
+            [],
+            "register",
+        )
 
         st.success(f"{len(saved_paths)}件を登録しました。")
         if len(saved_paths) == 1:
             st.write("保存先:", saved_paths[0])
         else:
             st.write("保存先（先頭3件）:", ", ".join(saved_paths[:3]))
+        if sync_ok:
+            st.success(sync_message)
+        else:
+            st.warning(sync_message)
         st.rerun()
 
 
@@ -346,7 +540,16 @@ with tab_manage:
                     row["ocr_text"] = extract_ocr_text(to_abs_path(rel))
                     updated += 1
                 write_records(records)
+                sync_ok, sync_message = sync_changes_to_github(
+                    ["./data.js"],
+                    [],
+                    "reindex-ocr",
+                )
             st.success(f"OCRを{updated}件更新しました。")
+            if sync_ok:
+                st.success(sync_message)
+            else:
+                st.warning(sync_message)
             st.rerun()
     else:
         st.info("画像内テキスト検索を有効にするには、`pytesseract` と `tesseract` の導入が必要です。")
@@ -434,17 +637,25 @@ with tab_manage:
                                 st.stop()
 
                         updated_path = r.get("path", "")
+                        original_path = updated_path
                         updated_ocr = r.get("ocr_text", "")
                         updated_desc = " ".join(
                             [tag for tag in (normalize_hash_tag(t) for t in edited_tags) if tag]
                         )
+                        changed_for_sync = ["./data.js"]
+                        deleted_for_sync = []
                         if replacement is not None:
                             new_path = save_image(replacement, cat)
                             delete_record_image(updated_path)
+                            deleted_for_sync.append(updated_path)
                             updated_path = new_path
+                            changed_for_sync.append(updated_path)
                             updated_ocr = extract_ocr_text(to_abs_path(updated_path))
                         elif cat != r.get("category", ""):
                             updated_path = move_record_image(updated_path, cat)
+                            if updated_path != original_path:
+                                deleted_for_sync.append(original_path)
+                                changed_for_sync.append(updated_path)
 
                         for row in records:
                             if row.get("id") == rec_id:
@@ -456,14 +667,33 @@ with tab_manage:
                                 break
 
                         write_records(records)
+                        sync_ok, sync_message = sync_changes_to_github(
+                            changed_for_sync,
+                            deleted_for_sync,
+                            "update",
+                        )
                         st.success("更新しました。")
+                        if sync_ok:
+                            st.success(sync_message)
+                        else:
+                            st.warning(sync_message)
                         st.rerun()
 
                 with col_delete:
                     confirm = st.checkbox("削除を確定する", key=f"confirm_{rec_id}")
                     if st.button("削除する", key=f"delete_{rec_id}", disabled=not confirm):
-                        delete_record_image(r.get("path", ""))
+                        deleted_image_path = r.get("path", "")
+                        delete_record_image(deleted_image_path)
                         records = [row for row in records if row.get("id") != rec_id]
                         write_records(records)
+                        sync_ok, sync_message = sync_changes_to_github(
+                            ["./data.js"],
+                            [deleted_image_path],
+                            "delete",
+                        )
                         st.warning("削除しました。")
+                        if sync_ok:
+                            st.success(sync_message)
+                        else:
+                            st.warning(sync_message)
                         st.rerun()
