@@ -542,16 +542,50 @@
       .brand-logo-fallback .logo-mark::after{left:6px; bottom:5px; width:15px; height:11px;}
       .hero{padding:14px 0 10px;}
       .hero-main{transform:scale(0.9);}
-      .hero-controls{padding:10px 0;}
+      .hero-controls{padding:8px 0;}
       .hero-controls-grid{
-        grid-template-columns:1fr;
-        gap:10px;
+        grid-template-columns:minmax(0,1.25fr) repeat(2,minmax(0,1fr));
+        gap:8px;
+      }
+      .hero-search-box{
+        border-radius:8px;
+        padding:6px 8px;
+        gap:6px;
+      }
+      .hero-search-icon{
+        width:13px;
+        height:13px;
+        border-width:2px;
+      }
+      .hero-search-icon::after{
+        width:6px;
+        height:2px;
+        right:-5px;
+        bottom:-2px;
+      }
+      .hero-search-input{
+        font-size:11px;
+      }
+      .hero-register-link{
+        border-radius:8px;
+        padding:7px 8px;
+        font-size:12px;
+      }
+      .category-dropdown-trigger{
+        border-radius:8px;
+        padding:7px 8px;
+        gap:5px;
+      }
+      .category-dropdown-num,
+      .category-dropdown-sep,
+      .category-dropdown-name,
+      .category-dropdown-caret{
+        font-size:12px;
       }
       .hero h1{font-size:42px;}
       .hero p{font-size:20px; margin-top:6px;}
       .category-zone{padding:22px 0 28px;}
       .category-zone-title{font-size:40px; margin-bottom:18px;}
-      .category-dropdown-trigger{padding:10px 14px;}
       .gallery-zone{padding:34px 0 38px;}
       .gallery-title{font-size:34px; margin-bottom:18px;}
       .category-grid{grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;}
@@ -603,6 +637,25 @@
       .category-dropdown-name,
       .category-dropdown-caret{
         font-size:13px;
+      }
+    }
+    @media (max-width: 699px){
+      .hero-controls-grid{
+        display:flex;
+        flex-wrap:nowrap;
+        gap:8px;
+      }
+      .hero-search,
+      .hero-register,
+      .hero-toolbar{
+        min-width:0;
+      }
+      .hero-search{
+        flex:1.25 1 0;
+      }
+      .hero-register,
+      .hero-toolbar{
+        flex:1 1 0;
       }
     }
   </style>
