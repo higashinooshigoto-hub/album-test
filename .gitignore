@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# local cert / local scripts
+.cert/
+start_viewer.command
+start_viewer_https.command
+iPhone閲覧手順.md
+
+# python cache
+__pycache__/
+*.pyc
+
+# secrets
+.streamlit/secrets.toml
+.env
+.env.*

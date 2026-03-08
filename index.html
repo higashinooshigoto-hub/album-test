@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>トッピング図鑑</title>
+  <style>
+    :root{
+      --bg:#ececec;
+      --text:#231a1d;
+      --muted:#54545a;
+      --zone-top:#ececec;
+      --zone-bottom:#f1efcf;
+      --card:#f9f9f9;
+      --line:#231a1d;
+      --accent:#f2b404;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:"Avenir Next","Hiragino Sans","Noto Sans JP",sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+    .wrap{
+      max-width:1160px;
+      margin:0 auto;
+      padding:0 28px;
+    }
+
+    .site-header{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      width:100%;
+      z-index:1200;
+      box-shadow:0 2px 0 rgba(0,0,0,.06);
+    }
+    .logo-bar{
+      background:#ffffff;
+      border-top:2px solid #1b1b1b;
+      border-bottom:1px solid #d7d7d7;
+      height:50px;
+      padding:0;
+    }
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100%;
+      font-weight:700;
+      font-size:30px;
+      line-height:1;
+      letter-spacing:.01em;
+      color:#0f0f11;
+    }
+    .brand-logo{
+      display:block;
+      height:30px;
+      width:auto;
+      max-width:min(460px,90vw);
+      object-fit:contain;
+    }
+    .brand-logo-fallback{
+      display:none;
+      align-items:center;
+      gap:10px;
+    }
+    .brand-logo-fallback .logo-mark{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background:#efb300;
+      position:relative;
+      flex:0 0 auto;
+    }
+    .brand-logo-fallback .logo-mark::before{
+      content:"";
+      position:absolute;
+      left:9px;
+      top:6px;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#ffffff;
+    }
+    .brand-logo-fallback .logo-mark::after{
+      content:"";
+      position:absolute;
+      left:8px;
+      bottom:7px;
+      width:20px;
+      height:15px;
+      border-radius:12px 12px 10px 10px;
+      background:#ffffff;
+    }
+    .hero{
+      background:#f2b404;
+      padding:20px 0;
+      border-bottom:1px solid rgba(0,0,0,.12);
+    }
+    .hero-inner{
+      position:relative;
+      min-height:116px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .hero-main{
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      min-height:116px;
+      transform:scale(0.8);
+      transform-origin:center center;
+    }
+    .hero-search{
+      position:absolute;
+      left:0;
+      top:50%;
+      transform:translateY(-50%);
+      width:min(300px,44vw);
+      display:flex;
+      justify-content:flex-start;
+    }
+    .hero-search-box{
+      width:80%;
+      background:#ffffff;
+      border-radius:14px;
+      padding:10px 14px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .hero-search-icon{
+      width:18px;
+      height:18px;
+      border:3px solid #454545;
+      border-radius:50%;
+      position:relative;
+      flex:0 0 auto;
+      background:transparent;
+      padding:0;
+      cursor:pointer;
+    }
+    .hero-search-icon::after{
+      content:"";
+      position:absolute;
+      width:9px;
+      height:3px;
+      border-radius:2px;
+      background:#454545;
+      right:-7px;
+      bottom:-3px;
+      transform:rotate(45deg);
+      transform-origin:center;
+    }
+    .hero-search-input{
+      border:0;
+      padding:0;
+      background:transparent;
+      color:#171a1f;
+      font-size:12px;
+      line-height:1.2;
+      font-weight:600;
+      outline:none;
+      flex:1;
+      min-width:0;
+    }
+    .hero-search-input::placeholder{
+      color:#b3b3b3;
+      opacity:1;
+    }
+    .hero-search-input:focus{
+      box-shadow:none;
+    }
+    .hero-toolbar{
+      position:absolute;
+      right:0;
+      top:50%;
+      transform:translateY(-50%);
+      width:min(300px,44vw);
+      display:flex;
+      justify-content:flex-end;
+    }
+    .hero-toolbar .category-dropdown{
+      width:80%;
+    }
+    .hero h1{
+      margin:0;
+      font-size:60px;
+      line-height:1.03;
+      font-weight:800;
+      letter-spacing:.01em;
+      color:#231a1d;
+    }
+    .hero p{
+      margin:-2px 0 0;
+      font-size:25px;
+      line-height:1.2;
+      color:#1d1a1e;
+      font-weight:500;
+    }
+
+    .category-zone{
+      background:#ffffff;
+      padding:44px 0 60px;
+    }
+    .category-zone-title{
+      margin:0 0 30px;
+      text-align:center;
+      font-size:40.6px;
+      line-height:1;
+      letter-spacing:.01em;
+      font-weight:800;
+    }
+    .category-dropdown{
+      position:relative;
+      width:min(360px, 92vw);
+    }
+    .category-dropdown-trigger{
+      width:100%;
+      border:0;
+      border-radius:8px;
+      padding:10px 16px;
+      background:#ffffff;
+      color:#171a1f;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+    }
+    .category-dropdown-num{
+      font-size:16px;
+      line-height:1;
+      font-weight:800;
+      flex:0 0 auto;
+    }
+    .category-dropdown-sep{
+      font-size:16px;
+      line-height:1;
+      font-weight:500;
+      opacity:.9;
+      flex:0 0 auto;
+    }
+    .category-dropdown-name{
+      font-size:16px;
+      line-height:1;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .category-dropdown-caret{
+      margin-left:4px;
+      font-size:16px;
+      opacity:.8;
+      flex:0 0 auto;
+    }
+    .category-dropdown-menu{
+      position:absolute;
+      left:0;
+      right:0;
+      top:calc(100% + 8px);
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 10px 24px rgba(0,0,0,.14);
+      padding:8px;
+      max-height:320px;
+      overflow:auto;
+      display:none;
+      z-index:30;
+    }
+    .category-dropdown-menu.open{
+      display:block;
+    }
+    .category-dropdown-item{
+      width:100%;
+      border:0;
+      background:transparent;
+      border-radius:8px;
+      padding:10px 12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      text-align:left;
+    }
+    .category-dropdown-item:hover{
+      background:#f5f5f5;
+    }
+    .category-dropdown-item.active{
+      background:#fff8d8;
+    }
+    .category-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:18px;
+    }
+    .category-card{
+      border:none;
+      background:rgb(243, 243, 240);
+      color:#000000;
+      -webkit-text-fill-color:#000000;
+      border-radius:14px;
+      padding:14px;
+      text-align:left;
+      cursor:pointer;
+      min-height:0;
+      transition:transform .12s ease, box-shadow .16s ease;
+    }
+    .category-card.active{
+      background:rgb(248, 181, 0);
+      box-shadow:none;
+      transform:translateY(-1px);
+    }
+    .category-head{
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      margin-bottom:10px;
+      min-height:42px;
+    }
+    .category-number{
+      font-size:22px;
+      line-height:1;
+      font-weight:800;
+      flex:0 0 auto;
+    }
+    .category-sep{
+      font-size:22px;
+      line-height:1;
+      font-weight:500;
+      flex:0 0 auto;
+      opacity:.9;
+    }
+    .category-name{
+      font-size:16px;
+      line-height:1;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      min-width:0;
+      flex:1 1 auto;
+    }
+    .category-thumb,
+    .category-thumb-empty{
+      width:100%;
+      aspect-ratio:4 / 3;
+      border-radius:8px;
+      display:block;
+      background:#9f9fa1;
+    }
+    .category-thumb{
+      object-fit:cover;
+      object-position: top center;
+    }
+    .category-thumb-empty{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#ffffff;
+      font-size:38px;
+      font-weight:700;
+      letter-spacing:.03em;
+    }
+
+    .gallery-zone{
+      display:none;
+    }
+    .gallery-title{
+      margin:0 0 36px;
+      text-align:center;
+      font-size:40.6px;
+      line-height:1.08;
+      font-weight:800;
+      letter-spacing:.01em;
+    }
+    .gallery-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:24px;
+    }
+    .photo-card{
+      background:#fff;
+      border:none;
+      border-radius:0;
+      padding:18px;
+    }
+    .photo-title{
+      margin:0 0 14px;
+      font-size:18px;
+      line-height:1.25;
+      font-weight:600;
+      overflow-wrap:anywhere;
+    }
+    .photo-link{
+      display:block;
+      text-decoration:none;
+      cursor:zoom-in;
+    }
+    .photo-link img{
+      width:100%;
+      aspect-ratio:4 / 3;
+      object-fit:cover;
+      object-position: top center;
+      border-radius:6px;
+      background:#9f9fa1;
+      display:block;
+    }
+    .photo-desc{
+      margin:14px 0 0;
+      font-size:16px;
+      line-height:1.35;
+      color:#1f2227;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+
+    .empty{
+      padding:24px;
+      background:#fff;
+      border-radius:12px;
+      color:var(--muted);
+      font-size:16px;
+    }
+
+    .pagination{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:8px;
+      margin-top:30px;
+      flex-wrap:wrap;
+    }
+    .page-btn{
+      border:1px solid #c3c7d0;
+      border-radius:10px;
+      background:#fff;
+      padding:6px 10px;
+      min-width:40px;
+      color:#202631;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .page-btn.active{
+      background:rgb(248, 181, 0);
+      border-color:rgb(248, 181, 0);
+      color:#ffffff;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(15,18,22,.75);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:16px;
+    }
+    .modal.open{display:flex;}
+    .modal-inner{
+      width:min(980px,100%);
+      max-height:100%;
+      background:#101114;
+      border-radius:12px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .modal-image-wrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#000;
+      border-radius:8px;
+      overflow:auto;
+    }
+    .modal-image-wrap img{
+      width:auto;
+      max-width:100%;
+      max-height:78vh;
+      object-fit:contain;
+      display:block;
+    }
+    .modal-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .modal-btn{
+      border:1px solid #4e545c;
+      border-radius:8px;
+      background:#252a32;
+      color:#fff;
+      text-decoration:none;
+      font-size:14px;
+      padding:8px 12px;
+      cursor:pointer;
+    }
+
+    @media (max-width: 1200px){
+      .logo-wrap{font-size:42px;}
+      .hero h1{font-size:52px;}
+      .hero p{font-size:22px;}
+      .category-zone-title{font-size:52px;}
+      .gallery-title{font-size:44px;}
+      .category-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+      .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @media (max-width: 780px){
+      .wrap{padding:0 14px;}
+      .logo-wrap{font-size:26px;}
+      .brand-logo-fallback .logo-mark{width:34px; height:34px;}
+      .brand-logo-fallback .logo-mark::before{left:7px; top:4px; width:10px; height:10px;}
+      .brand-logo-fallback .logo-mark::after{left:6px; bottom:5px; width:15px; height:11px;}
+      .hero{padding:18px 0 14px;}
+      .hero-inner{
+        min-height:0;
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+      }
+      .hero-toolbar{
+        position:static;
+        transform:none;
+        width:min(360px,92vw);
+        justify-content:center;
+      }
+      .hero-search{
+        position:static;
+        transform:none;
+        width:min(360px,92vw);
+        justify-content:center;
+        order:2;
+      }
+      .hero-search-box{width:80%;}
+      .hero-main{min-height:0; order:1;}
+      .hero-toolbar{order:3;}
+      .hero h1{font-size:42px;}
+      .hero p{font-size:20px; margin-top:6px;}
+      .category-zone{padding:22px 0 28px;}
+      .category-zone-title{font-size:40px; margin-bottom:18px;}
+      .category-dropdown-trigger{padding:10px 14px;}
+      .gallery-zone{padding:34px 0 38px;}
+      .gallery-title{font-size:34px; margin-bottom:18px;}
+      .category-grid{grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;}
+      .gallery-grid{grid-template-columns:1fr; gap:14px;}
+      .category-number{font-size:22px;}
+      .category-sep{font-size:22px;}
+      .category-name{font-size:16px;}
+      .category-thumb-empty{font-size:26px;}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-bar">
+      <div class="wrap logo-wrap">
+        <img id="brandLogo" class="brand-logo" src="./assets/btech-logo.png" alt="Btech Inc.">
+        <span id="brandLogoFallback" class="brand-logo-fallback">
+          <span class="logo-mark" aria-hidden="true"></span>
+          <span>Btech Inc.</span>
+        </span>
+      </div>
+    </div>
+    <div class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-search">
+          <div class="hero-search-box">
+            <button id="heroSearchButton" class="hero-search-icon" type="button" aria-label="検索"></button>
+            <input id="heroSearchInput" class="hero-search-input" type="search" placeholder="キーワードを入力してください" aria-label="画像検索">
+          </div>
+        </div>
+        <div class="hero-main">
+          <h1>トッピング図鑑</h1>
+          <p>Explore real topping ideas.</p>
+        </div>
+        <div class="hero-toolbar">
+          <div id="categoryDropdown" class="category-dropdown">
+            <button id="categoryDropdownTrigger" class="category-dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span id="categoryDropdownNum" class="category-dropdown-num">--</span>
+              <span class="category-dropdown-sep">|</span>
+              <span id="categoryDropdownName" class="category-dropdown-name">カテゴリなし</span>
+              <span class="category-dropdown-caret" aria-hidden="true">▼</span>
+            </button>
+            <div id="categoryDropdownMenu" class="category-dropdown-menu" role="listbox"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="category-zone">
+    <div class="wrap">
+      <h2 class="category-zone-title">CATEGORY</h2>
+      <div id="categoryButtons" class="category-grid"></div>
+    </div>
+  </section>
+
+  <section class="gallery-zone">
+    <div class="wrap">
+      <h2 id="categoryTitle" class="gallery-title"></h2>
+      <div id="app" class="gallery-grid"></div>
+      <div id="pagination" class="pagination"></div>
+    </div>
+  </section>
+
+  <div id="imageModal" class="modal" aria-hidden="true">
+    <div class="modal-inner">
+      <div class="modal-image-wrap">
+        <img id="modalImage" src="" alt="拡大画像">
+      </div>
+      <div class="modal-actions">
+        <a id="modalOpenTab" class="modal-btn" href="#" target="_blank" rel="noopener noreferrer">新しいタブで開く</a>
+        <button id="modalClose" class="modal-btn" type="button">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script>
+    const PAGE_SIZE = 10;
+    const CATEGORY_ORDER = [
+      "トッピングシート",
+      "ライスプレート",
+      "ダイカットライスプレート",
+      "もなかの皮",
+      "ふやき_別注",
+      "ビス生地",
+      "冷凍パイ生地_別注",
+      "Φ45バタークッキー",
+      "丸クッキー",
+      "Tシャツクッキー",
+      "スクエアクッキー_30角",
+      "スクエアクッキー_48角",
+      "プチバタークッキー",
+      "ボーロ",
+      "クッキー_別注",
+      "アイシングビスケット",
+      "チョコマシュマロ",
+      "ミニチョコマシュマロ",
+      "ラスク_別注",
+      "大豆シート",
+      "焼きかま"
+    ];
+    const data = Array.isArray(window.PHOTO_DATA) ? window.PHOTO_DATA : [];
+
+    const app = document.getElementById("app");
+    const categoryButtons = document.getElementById("categoryButtons");
+    const categoryDropdown = document.getElementById("categoryDropdown");
+    const categoryDropdownTrigger = document.getElementById("categoryDropdownTrigger");
+    const categoryDropdownMenu = document.getElementById("categoryDropdownMenu");
+    const categoryDropdownNum = document.getElementById("categoryDropdownNum");
+    const categoryDropdownName = document.getElementById("categoryDropdownName");
+    const categoryTitle = document.getElementById("categoryTitle");
+    const pagination = document.getElementById("pagination");
+    const imageModal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalOpenTab = document.getElementById("modalOpenTab");
+    const modalClose = document.getElementById("modalClose");
+    const brandLogo = document.getElementById("brandLogo");
+    const brandLogoFallback = document.getElementById("brandLogoFallback");
+    const heroSearchInput = document.getElementById("heroSearchInput");
+    const heroSearchButton = document.getElementById("heroSearchButton");
+
+    const categoryPriority = new Map(CATEGORY_ORDER.map((name, index) => [name, index]));
+    const categories = [...new Set(data.map(item => item.category).filter(Boolean))]
+      .sort((a, b) => {
+        const ia = categoryPriority.has(a) ? categoryPriority.get(a) : Number.MAX_SAFE_INTEGER;
+        const ib = categoryPriority.has(b) ? categoryPriority.get(b) : Number.MAX_SAFE_INTEGER;
+        if (ia !== ib) return ia - ib;
+        return a.localeCompare(b, "ja");
+      });
+
+    let currentCategory = categories[0] || "";
+    let currentPage = 1;
+    let searchKeyword = "";
+    let categoryKeyword = "";
+    const latestByCategory = buildLatestByCategory();
+
+    if (categories.length === 0) {
+      categoryButtons.innerHTML = "";
+      categoryDropdownTrigger.disabled = true;
+      categoryDropdownNum.textContent = "--";
+      categoryDropdownName.textContent = "カテゴリなし";
+      categoryDropdownMenu.innerHTML = "";
+    } else {
+      renderCategoryDropdown();
+      renderCategoryButtons();
+    }
+
+    if (brandLogo && brandLogoFallback) {
+      brandLogo.addEventListener("error", () => {
+        brandLogo.style.display = "none";
+        brandLogoFallback.style.display = "inline-flex";
+        syncHeaderOffset();
+      });
+    }
+
+    function syncHeaderOffset() {
+      const header = document.querySelector(".site-header");
+      if (!header) return;
+      document.body.style.paddingTop = `${header.offsetHeight}px`;
+    }
+    window.addEventListener("resize", syncHeaderOffset);
+    window.addEventListener("orientationchange", syncHeaderOffset);
+    syncHeaderOffset();
+
+    function setCategory(category) {
+      currentCategory = category;
+      currentPage = 1;
+      updateCategoryDropdownLabel();
+      closeCategoryDropdown();
+      renderCategoryDropdown();
+      renderCategoryButtons();
+    }
+
+    function renderCategoryDropdown() {
+      updateCategoryDropdownLabel();
+      categoryDropdownMenu.innerHTML = categories.map((cat, idx) => {
+        const encodedCategory = encodeURIComponent(cat);
+        const num = String(idx + 1).padStart(2, "0");
+        return `
+          <button class="category-dropdown-item ${cat === currentCategory ? "active" : ""}" data-cat="${encodedCategory}" type="button" role="option">
+            <span class="category-dropdown-num">${num}</span>
+            <span class="category-dropdown-sep">|</span>
+            <span class="category-dropdown-name">${escapeHtml(cat)}</span>
+          </button>
+        `;
+      }).join("");
+
+      categoryDropdownMenu.querySelectorAll(".category-dropdown-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const category = decodeURIComponent(btn.dataset.cat || "");
+          setCategory(category);
+          openCategoryPage(category);
+        });
+      });
+    }
+
+    function renderCategoryButtons() {
+      const targetCategories = categoryKeyword
+        ? categories.filter((cat) => cat.toLowerCase().includes(categoryKeyword))
+        : categories;
+
+      if (targetCategories.length === 0) {
+        categoryButtons.innerHTML = '<div class="empty">該当するカテゴリがありません。</div>';
+        return;
+      }
+
+      categoryButtons.innerHTML = targetCategories.map((cat) => {
+        const latest = latestByCategory.get(cat);
+        const imageUrl = latest ? toAbsoluteUrl(latest.path || "") : "";
+        const num = String(categories.indexOf(cat) + 1).padStart(2, "0");
+        const encodedCategory = encodeURIComponent(cat);
+
+        return `
+          <button class="category-card ${cat === currentCategory ? "active" : ""}" data-cat="${encodedCategory}">
+            <div class="category-head">
+              <span class="category-number">${num}</span>
+              <span class="category-sep">|</span>
+              <span class="category-name">${escapeHtml(cat)}</span>
+            </div>
+            ${latest
+              ? `<img class="category-thumb" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(cat)} 最新画像">`
+              : `<span class="category-thumb-empty">写真</span>`
+            }
+          </button>
+        `;
+      }).join("");
+
+      categoryButtons.querySelectorAll(".category-card").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const category = decodeURIComponent(btn.dataset.cat || "");
+          setCategory(category);
+          openCategoryPage(category);
+        });
+      });
+    }
+
+    function openCategoryPage(category) {
+      const url = `./category.html?category=${encodeURIComponent(category)}`;
+      window.location.href = url;
+    }
+
+    function openSearchPage(keyword) {
+      const q = (keyword || "").trim();
+      if (!q) return;
+      const url = `./category.html?q=${encodeURIComponent(q)}`;
+      window.location.href = url;
+    }
+
+    function render() {
+      const isSearchMode = searchKeyword.length > 0;
+      const baseItems = isSearchMode
+        ? data
+        : data.filter(item => item.category === currentCategory);
+      const filteredItems = isSearchMode
+        ? baseItems.filter((item) => isSearchMatch(item, searchKeyword))
+        : baseItems;
+
+      if (isSearchMode) {
+        categoryTitle.textContent = `検索結果｜${searchKeyword}（${filteredItems.length}件）`;
+      } else {
+        categoryTitle.textContent = formatCategoryLabel(currentCategory, categories.indexOf(currentCategory));
+      }
+
+      if (baseItems.length === 0) {
+        app.innerHTML = '<div class="empty">この種類の写真はまだありません。</div>';
+        pagination.innerHTML = "";
+        return;
+      }
+      if (filteredItems.length === 0) {
+        app.innerHTML = '<div class="empty">検索条件に一致する写真がありません。</div>';
+        pagination.innerHTML = "";
+        return;
+      }
+
+      const totalPages = Math.ceil(filteredItems.length / PAGE_SIZE);
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const pagedItems = filteredItems.slice(start, start + PAGE_SIZE);
+
+      app.innerHTML = pagedItems.map(item => {
+        const imageUrl = toAbsoluteUrl(item.path || "");
+        return `
+          <article class="photo-card">
+            <h3 class="photo-title">${escapeHtml(item.title || "")}</h3>
+            <a class="photo-link js-open-image" href="${escapeHtml(imageUrl)}" data-img="${escapeHtml(imageUrl)}" target="_blank" rel="noopener noreferrer">
+              <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.title || "写真")}">
+            </a>
+            <p class="photo-desc">${escapeHtml(item.description || "")}</p>
+          </article>
+        `;
+      }).join("");
+
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) {
+        pagination.innerHTML = "";
+        return;
+      }
+
+      const pageButtons = Array.from({ length: totalPages }, (_, i) => i + 1)
+        .map(page => `<button class="page-btn ${page === currentPage ? "active" : ""}" data-page="${page}">${page}</button>`)
+        .join("");
+
+      pagination.innerHTML = `
+        <button class="page-btn" data-nav="prev" ${currentPage === 1 ? "disabled" : ""}>前へ</button>
+        ${pageButtons}
+        <button class="page-btn" data-nav="next" ${currentPage === totalPages ? "disabled" : ""}>次へ</button>
+      `;
+
+      pagination.querySelectorAll("[data-page]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentPage = Number(btn.dataset.page);
+          render();
+        });
+      });
+
+      const prev = pagination.querySelector('[data-nav="prev"]');
+      const next = pagination.querySelector('[data-nav="next"]');
+
+      if (prev) {
+        prev.addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage -= 1;
+            render();
+          }
+        });
+      }
+      if (next) {
+        next.addEventListener("click", () => {
+          if (currentPage < totalPages) {
+            currentPage += 1;
+            render();
+          }
+        });
+      }
+    }
+
+    app.addEventListener("click", (event) => {
+      const link = event.target.closest(".js-open-image");
+      if (!link) return;
+
+      const isMobileLike = window.matchMedia("(pointer: coarse)").matches;
+      if (!isMobileLike) return;
+
+      event.preventDefault();
+      openImageModal(link.dataset.img || link.href);
+    });
+
+    modalClose.addEventListener("click", closeImageModal);
+    imageModal.addEventListener("click", (event) => {
+      if (event.target === imageModal) closeImageModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeImageModal();
+    });
+
+    function openImageModal(url) {
+      modalImage.src = url;
+      modalOpenTab.href = url;
+      imageModal.classList.add("open");
+      imageModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeImageModal() {
+      imageModal.classList.remove("open");
+      imageModal.setAttribute("aria-hidden", "true");
+      modalImage.src = "";
+    }
+
+    function toAbsoluteUrl(path) {
+      try {
+        return new URL(path, window.location.href).href;
+      } catch (e) {
+        return path;
+      }
+    }
+
+    function formatCategoryLabel(category, index) {
+      if (!category || index < 0) return category || "";
+      return `${String(index + 1).padStart(2, "0")}｜${category}`;
+    }
+
+    function buildLatestByCategory() {
+      const map = new Map();
+      data.forEach((item, index) => {
+        const category = item.category;
+        if (!category) return;
+
+        const prev = map.get(category);
+        if (!prev) {
+          map.set(category, { item, index });
+          return;
+        }
+
+        const prevId = String(prev.item.id || "");
+        const nextId = String(item.id || "");
+        const useNext = (nextId && prevId && nextId > prevId) || (!nextId && index > prev.index) || (nextId && !prevId);
+        if (useNext) map.set(category, { item, index });
+      });
+
+      const latest = new Map();
+      map.forEach((value, key) => latest.set(key, value.item));
+      return latest;
+    }
+
+    function updateCategoryDropdownLabel() {
+      const idx = categories.indexOf(currentCategory);
+      if (idx < 0) {
+        categoryDropdownNum.textContent = "--";
+        categoryDropdownName.textContent = "カテゴリなし";
+        return;
+      }
+      categoryDropdownNum.textContent = String(idx + 1).padStart(2, "0");
+      categoryDropdownName.textContent = currentCategory;
+    }
+
+    function openCategoryDropdown() {
+      categoryDropdownMenu.classList.add("open");
+      categoryDropdownTrigger.setAttribute("aria-expanded", "true");
+    }
+
+    function closeCategoryDropdown() {
+      categoryDropdownMenu.classList.remove("open");
+      categoryDropdownTrigger.setAttribute("aria-expanded", "false");
+    }
+
+    function isSearchMatch(item, keyword) {
+      const source = `${item.title || ""}\n${item.description || ""}\n${item.category || ""}\n${item.ocr_text || ""}`.toLowerCase();
+      return source.includes(keyword);
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    categoryDropdownTrigger.addEventListener("click", () => {
+      if (categoryDropdownMenu.classList.contains("open")) {
+        closeCategoryDropdown();
+      } else {
+        openCategoryDropdown();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!categoryDropdown.contains(event.target)) {
+        closeCategoryDropdown();
+      }
+    });
+
+    if (heroSearchInput) {
+      heroSearchInput.addEventListener("input", () => {
+        categoryKeyword = heroSearchInput.value.trim().toLowerCase();
+        renderCategoryButtons();
+      });
+      heroSearchInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          openSearchPage(heroSearchInput.value);
+        }
+      });
+    }
+
+    if (heroSearchButton && heroSearchInput) {
+      heroSearchButton.addEventListener("click", () => {
+        openSearchPage(heroSearchInput.value);
+      });
+    }
+
+  </script>
+</body>
+</html>

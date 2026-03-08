@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>トッピング図鑑 | カテゴリ一覧</title>
+  <style>
+    :root{
+      --bg:#ececec;
+      --text:#231a1d;
+      --muted:#54545a;
+      --accent:rgb(248, 181, 0);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:"Avenir Next","Hiragino Sans","Noto Sans JP",sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+    .wrap{
+      max-width:1160px;
+      margin:0 auto;
+      padding:0 28px;
+    }
+    .site-header{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      width:100%;
+      z-index:1200;
+      box-shadow:0 2px 0 rgba(0,0,0,.06);
+    }
+    .logo-bar{
+      background:#ffffff;
+      border-top:2px solid #1b1b1b;
+      border-bottom:1px solid #d7d7d7;
+      height:50px;
+      padding:0;
+    }
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100%;
+    }
+    .brand-logo{
+      display:block;
+      height:30px;
+      width:auto;
+      max-width:min(460px,90vw);
+      object-fit:contain;
+    }
+    .brand-logo-fallback{
+      display:none;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      font-size:30px;
+      line-height:1;
+      color:#0f0f11;
+    }
+    .brand-logo-fallback .logo-mark{
+      width:30px;
+      height:30px;
+      border-radius:50%;
+      background:#efb300;
+      position:relative;
+      flex:0 0 auto;
+    }
+    .brand-logo-fallback .logo-mark::before{
+      content:"";
+      position:absolute;
+      left:6px;
+      top:4px;
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#ffffff;
+    }
+    .brand-logo-fallback .logo-mark::after{
+      content:"";
+      position:absolute;
+      left:6px;
+      bottom:4px;
+      width:14px;
+      height:10px;
+      border-radius:10px 10px 8px 8px;
+      background:#ffffff;
+    }
+
+    .hero{
+      background:#f2b404;
+      padding:16px 0;
+      border-bottom:1px solid rgba(0,0,0,.12);
+    }
+    .hero-inner{
+      display:grid;
+      grid-template-columns:minmax(220px,300px) 1fr minmax(220px,300px);
+      align-items:center;
+      gap:14px;
+    }
+    .hero-main{
+      justify-self:center;
+      text-align:center;
+    }
+    .hero-main h1{
+      margin:0;
+      font-size:42px;
+      line-height:1;
+      font-weight:800;
+      letter-spacing:.01em;
+      color:#231a1d;
+    }
+    .hero-main p{
+      margin:6px 0 0;
+      font-size:18px;
+      line-height:1.2;
+      color:#1d1a1e;
+      font-weight:500;
+    }
+    .hero-back{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      justify-self:start;
+      text-decoration:none;
+      background:#ffffff;
+      color:#231a1d;
+      border-radius:8px;
+      padding:10px 14px;
+      font-size:14px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .category-select{
+      border:0;
+      border-radius:8px;
+      padding:10px 14px;
+      background:#ffffff;
+      color:#171a1f;
+      font-size:16px;
+      line-height:1;
+      font-weight:700;
+      justify-self:end;
+      width:100%;
+      min-width:220px;
+      max-width:300px;
+    }
+
+    .gallery-zone{
+      background:#FFFCD2;
+      padding:44px 0 72px;
+    }
+    .gallery-title{
+      margin:0 0 28px;
+      text-align:center;
+      font-size:40.6px;
+      line-height:1.08;
+      font-weight:800;
+      letter-spacing:.01em;
+    }
+    .gallery-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:24px;
+    }
+    .photo-card{
+      background:#fff;
+      border:none;
+      border-radius:0;
+      padding:18px;
+    }
+    .photo-title{
+      margin:0 0 14px;
+      font-size:18px;
+      line-height:1.25;
+      font-weight:600;
+      overflow-wrap:anywhere;
+    }
+    .photo-link{
+      display:block;
+      text-decoration:none;
+      cursor:zoom-in;
+    }
+    .photo-link img{
+      width:100%;
+      aspect-ratio:4 / 3;
+      object-fit:cover;
+      object-position:top center;
+      border-radius:6px;
+      background:#9f9fa1;
+      display:block;
+    }
+    .photo-desc{
+      margin:14px 0 0;
+      font-size:16px;
+      line-height:1.35;
+      color:#1f2227;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+    .empty{
+      padding:24px;
+      background:#fff;
+      border-radius:12px;
+      color:var(--muted);
+      font-size:16px;
+    }
+    .pagination{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:8px;
+      margin-top:30px;
+      flex-wrap:wrap;
+    }
+    .page-btn{
+      border:1px solid #c3c7d0;
+      border-radius:10px;
+      background:#fff;
+      padding:6px 10px;
+      min-width:40px;
+      color:#202631;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .page-btn.active{
+      background:rgb(248, 181, 0);
+      border-color:rgb(248, 181, 0);
+      color:#ffffff;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(15,18,22,.75);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:16px;
+    }
+    .modal.open{display:flex;}
+    .modal-inner{
+      width:min(980px,100%);
+      max-height:100%;
+      background:#101114;
+      border-radius:12px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .modal-image-wrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#000;
+      border-radius:8px;
+      overflow:auto;
+    }
+    .modal-image-wrap img{
+      width:auto;
+      max-width:100%;
+      max-height:78vh;
+      object-fit:contain;
+      display:block;
+    }
+    .modal-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .modal-btn{
+      border:1px solid #4e545c;
+      border-radius:8px;
+      background:#252a32;
+      color:#fff;
+      text-decoration:none;
+      font-size:14px;
+      padding:8px 12px;
+      cursor:pointer;
+    }
+
+    @media (max-width: 1200px){
+      .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @media (max-width: 780px){
+      .wrap{padding:0 14px;}
+      .hero-inner{
+        grid-template-columns:1fr;
+        gap:10px;
+      }
+      .hero-main h1{font-size:34px;}
+      .hero-main p{font-size:16px;}
+      .hero-back{justify-self:center;}
+      .category-select{
+        justify-self:center;
+        width:min(360px,92vw);
+        min-width:0;
+      }
+      .gallery-zone{padding:28px 0 40px;}
+      .gallery-title{font-size:34px; margin-bottom:18px;}
+      .gallery-grid{grid-template-columns:1fr; gap:14px;}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-bar">
+      <div class="wrap logo-wrap">
+        <img id="brandLogo" class="brand-logo" src="./assets/btech-logo.png" alt="Btech Inc.">
+        <span id="brandLogoFallback" class="brand-logo-fallback">
+          <span class="logo-mark" aria-hidden="true"></span>
+          <span>Btech Inc.</span>
+        </span>
+      </div>
+    </div>
+    <div class="hero">
+      <div class="wrap hero-inner">
+        <a class="hero-back" href="./index.html">TOPへ戻る</a>
+        <div class="hero-main">
+          <h1>トッピング図鑑</h1>
+          <p>Explore real topping ideas.</p>
+        </div>
+        <select id="categorySelect" class="category-select" aria-label="カテゴリ選択"></select>
+      </div>
+    </div>
+  </header>
+
+  <section class="gallery-zone">
+    <div class="wrap">
+      <h2 id="categoryTitle" class="gallery-title"></h2>
+      <div id="app" class="gallery-grid"></div>
+      <div id="pagination" class="pagination"></div>
+    </div>
+  </section>
+
+  <div id="imageModal" class="modal" aria-hidden="true">
+    <div class="modal-inner">
+      <div class="modal-image-wrap">
+        <img id="modalImage" src="" alt="拡大画像">
+      </div>
+      <div class="modal-actions">
+        <a id="modalOpenTab" class="modal-btn" href="#" target="_blank" rel="noopener noreferrer">新しいタブで開く</a>
+        <button id="modalClose" class="modal-btn" type="button">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script>
+    const PAGE_SIZE = 10;
+    const CATEGORY_ORDER = [
+      "トッピングシート",
+      "ライスプレート",
+      "ダイカットライスプレート",
+      "もなかの皮",
+      "ふやき_別注",
+      "ビス生地",
+      "冷凍パイ生地_別注",
+      "Φ45バタークッキー",
+      "丸クッキー",
+      "Tシャツクッキー",
+      "スクエアクッキー_30角",
+      "スクエアクッキー_48角",
+      "プチバタークッキー",
+      "ボーロ",
+      "クッキー_別注",
+      "アイシングビスケット",
+      "チョコマシュマロ",
+      "ミニチョコマシュマロ",
+      "ラスク_別注",
+      "大豆シート",
+      "焼きかま"
+    ];
+
+    const data = Array.isArray(window.PHOTO_DATA) ? window.PHOTO_DATA : [];
+    const app = document.getElementById("app");
+    const categorySelect = document.getElementById("categorySelect");
+    const categoryTitle = document.getElementById("categoryTitle");
+    const pagination = document.getElementById("pagination");
+    const imageModal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalOpenTab = document.getElementById("modalOpenTab");
+    const modalClose = document.getElementById("modalClose");
+    const brandLogo = document.getElementById("brandLogo");
+    const brandLogoFallback = document.getElementById("brandLogoFallback");
+
+    const categoryPriority = new Map(CATEGORY_ORDER.map((name, index) => [name, index]));
+    const categories = [...new Set(data.map(item => item.category).filter(Boolean))]
+      .sort((a, b) => {
+        const ia = categoryPriority.has(a) ? categoryPriority.get(a) : Number.MAX_SAFE_INTEGER;
+        const ib = categoryPriority.has(b) ? categoryPriority.get(b) : Number.MAX_SAFE_INTEGER;
+        if (ia !== ib) return ia - ib;
+        return a.localeCompare(b, "ja");
+      });
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedCategory = params.get("category") || "";
+    const requestedKeywordRaw = (params.get("q") || "").trim();
+    const requestedKeyword = requestedKeywordRaw.toLowerCase();
+    const isSearchMode = requestedKeyword.length > 0;
+    let currentCategory = categories.includes(requestedCategory) ? requestedCategory : (categories[0] || "");
+    let currentPage = 1;
+
+    if (brandLogo && brandLogoFallback) {
+      brandLogo.addEventListener("error", () => {
+        brandLogo.style.display = "none";
+        brandLogoFallback.style.display = "inline-flex";
+        syncHeaderOffset();
+      });
+    }
+
+    function syncHeaderOffset() {
+      const header = document.querySelector(".site-header");
+      if (!header) return;
+      document.body.style.paddingTop = `${header.offsetHeight}px`;
+    }
+    window.addEventListener("resize", syncHeaderOffset);
+    window.addEventListener("orientationchange", syncHeaderOffset);
+    syncHeaderOffset();
+
+    if (categories.length === 0) {
+      categorySelect.disabled = true;
+      categoryTitle.textContent = "まだ登録がありません";
+      app.innerHTML = '<div class="empty">まずは登録画面から写真を追加してください。</div>';
+      pagination.innerHTML = "";
+    } else {
+      if (isSearchMode) {
+        categorySelect.disabled = true;
+        categorySelect.innerHTML = `<option>検索結果</option>`;
+      }
+      renderCategorySelect();
+      render();
+    }
+
+    categorySelect.addEventListener("change", () => {
+      if (isSearchMode) return;
+      currentCategory = categorySelect.value;
+      currentPage = 1;
+      updateUrlCategory();
+      render();
+    });
+
+    function renderCategorySelect() {
+      if (isSearchMode) return;
+      categorySelect.innerHTML = categories
+        .map((cat, idx) => {
+          const num = String(idx + 1).padStart(2, "0");
+          const selected = cat === currentCategory ? "selected" : "";
+          return `<option value="${escapeHtml(cat)}" ${selected}>${num}｜${escapeHtml(cat)}</option>`;
+        })
+        .join("");
+    }
+
+    function render() {
+      const currentItems = isSearchMode
+        ? data.filter((item) => isSearchMatch(item, requestedKeyword))
+        : data.filter(item => item.category === currentCategory);
+      if (isSearchMode) {
+        categoryTitle.textContent = `検索結果｜${requestedKeywordRaw}（${currentItems.length}件）`;
+      } else {
+        categoryTitle.textContent = formatCategoryLabel(currentCategory, categories.indexOf(currentCategory));
+      }
+      document.title = `${categoryTitle.textContent} | トッピング図鑑`;
+
+      if (currentItems.length === 0) {
+        app.innerHTML = '<div class="empty">この種類の写真はまだありません。</div>';
+        pagination.innerHTML = "";
+        return;
+      }
+
+      const totalPages = Math.ceil(currentItems.length / PAGE_SIZE);
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const pagedItems = currentItems.slice(start, start + PAGE_SIZE);
+
+      app.innerHTML = pagedItems.map(item => {
+        const imageUrl = toAbsoluteUrl(item.path || "");
+        return `
+          <article class="photo-card">
+            <h3 class="photo-title">${escapeHtml(item.title || "")}</h3>
+            <a class="photo-link js-open-image" href="${escapeHtml(imageUrl)}" data-img="${escapeHtml(imageUrl)}" target="_blank" rel="noopener noreferrer">
+              <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.title || "写真")}">
+            </a>
+            <p class="photo-desc">${escapeHtml(item.description || "")}</p>
+          </article>
+        `;
+      }).join("");
+
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) {
+        pagination.innerHTML = "";
+        return;
+      }
+
+      const pageButtons = Array.from({ length: totalPages }, (_, i) => i + 1)
+        .map(page => `<button class="page-btn ${page === currentPage ? "active" : ""}" data-page="${page}">${page}</button>`)
+        .join("");
+
+      pagination.innerHTML = `
+        <button class="page-btn" data-nav="prev" ${currentPage === 1 ? "disabled" : ""}>前へ</button>
+        ${pageButtons}
+        <button class="page-btn" data-nav="next" ${currentPage === totalPages ? "disabled" : ""}>次へ</button>
+      `;
+
+      pagination.querySelectorAll("[data-page]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentPage = Number(btn.dataset.page);
+          render();
+        });
+      });
+
+      const prev = pagination.querySelector('[data-nav="prev"]');
+      const next = pagination.querySelector('[data-nav="next"]');
+
+      if (prev) {
+        prev.addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage -= 1;
+            render();
+          }
+        });
+      }
+      if (next) {
+        next.addEventListener("click", () => {
+          if (currentPage < totalPages) {
+            currentPage += 1;
+            render();
+          }
+        });
+      }
+    }
+
+    app.addEventListener("click", (event) => {
+      const link = event.target.closest(".js-open-image");
+      if (!link) return;
+
+      const isMobileLike = window.matchMedia("(pointer: coarse)").matches;
+      if (!isMobileLike) return;
+
+      event.preventDefault();
+      openImageModal(link.dataset.img || link.href);
+    });
+
+    modalClose.addEventListener("click", closeImageModal);
+    imageModal.addEventListener("click", (event) => {
+      if (event.target === imageModal) closeImageModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeImageModal();
+    });
+
+    function openImageModal(url) {
+      modalImage.src = url;
+      modalOpenTab.href = url;
+      imageModal.classList.add("open");
+      imageModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeImageModal() {
+      imageModal.classList.remove("open");
+      imageModal.setAttribute("aria-hidden", "true");
+      modalImage.src = "";
+    }
+
+    function updateUrlCategory() {
+      if (isSearchMode) return;
+      const url = `./category.html?category=${encodeURIComponent(currentCategory)}`;
+      window.history.replaceState(null, "", url);
+    }
+
+    function isSearchMatch(item, keyword) {
+      const source = `${item.title || ""}\n${item.description || ""}\n${item.category || ""}\n${item.ocr_text || ""}`.toLowerCase();
+      return source.includes(keyword);
+    }
+
+    function toAbsoluteUrl(path) {
+      try {
+        return new URL(path, window.location.href).href;
+      } catch (e) {
+        return path;
+      }
+    }
+
+    function formatCategoryLabel(category, index) {
+      if (!category || index < 0) return category || "";
+      return `${String(index + 1).padStart(2, "0")}｜${category}`;
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+  </script>
+</body>
+</html>
