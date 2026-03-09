@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>トッピング図鑑（登録画面）</title>
+  <style>
+    :root{
+      --bg:#f5f6f8;
+      --panel:#ffffff;
+      --line:#d8dde6;
+      --text:#242a34;
+      --muted:#6c7380;
+      --accent:#1f3d31;
+      --warn:#d34d4d;
+      --ok:#2d7d3a;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:"Avenir Next","Hiragino Sans","Noto Sans JP",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:960px;
+      margin:0 auto;
+      padding:24px 16px 40px;
+    }
+    .top-links{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .top-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text);
+      text-decoration:none;
+      font-size:14px;
+      font-weight:700;
+      padding:8px 12px;
+    }
+    h1{
+      margin:0;
+      font-size:46px;
+      line-height:1.05;
+      letter-spacing:.01em;
+      font-weight:800;
+    }
+    h1 span{
+      font-size:70%;
+      font-weight:700;
+    }
+    .lead{
+      margin:8px 0 16px;
+      color:#3c4452;
+      font-size:18px;
+      line-height:1.4;
+    }
+    .tabs{
+      display:flex;
+      gap:6px;
+      margin-bottom:12px;
+      border-bottom:1px solid var(--line);
+    }
+    .tab-btn{
+      border:1px solid var(--line);
+      border-bottom:0;
+      border-radius:10px 10px 0 0;
+      background:#f1f3f6;
+      color:#2a3340;
+      font-size:16px;
+      font-weight:700;
+      padding:10px 18px;
+      cursor:pointer;
+    }
+    .tab-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+    }
+    .panel{
+      display:none;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:0 12px 12px 12px;
+      padding:18px;
+    }
+    .panel.active{
+      display:block;
+    }
+    h2{
+      margin:0 0 12px;
+      font-size:24px;
+      line-height:1.2;
+      font-weight:800;
+    }
+    .form-row{
+      margin-bottom:14px;
+    }
+    label{
+      display:block;
+      margin:0 0 6px;
+      font-size:16px;
+      line-height:1.2;
+      font-weight:700;
+    }
+    input[type="text"], input[type="search"], select{
+      width:100%;
+      border:1px solid #d7dce4;
+      border-radius:10px;
+      background:#f5f6f8;
+      color:var(--text);
+      font-size:16px;
+      line-height:1.2;
+      padding:10px 12px;
+      outline:none;
+    }
+    input[type="file"]{
+      font-size:14px;
+    }
+    .dropzone{
+      min-height:220px;
+      border:2px dashed #b7beca;
+      border-radius:12px;
+      background:#f0f2f5;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      color:#4b5565;
+      font-size:20px;
+      line-height:1.5;
+      padding:20px;
+      cursor:pointer;
+    }
+    .dropzone.dragover{
+      border-color:#7f8ca0;
+      background:#e7ebf1;
+    }
+    .hint{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:16px;
+    }
+    .file-list{
+      margin:8px 0 0;
+      padding-left:18px;
+      color:#3a4250;
+      font-size:14px;
+      line-height:1.5;
+    }
+    .tag-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:8px;
+    }
+    .primary{
+      border:0;
+      border-radius:10px;
+      background:var(--accent);
+      color:#fff;
+      font-size:16px;
+      font-weight:700;
+      padding:10px 14px;
+      cursor:pointer;
+    }
+    .primary:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+    .note{
+      margin-top:10px;
+      font-size:14px;
+      line-height:1.5;
+    }
+    .ok{color:var(--ok);}
+    .err{color:var(--warn);}
+
+    .filter-grid{
+      display:grid;
+      grid-template-columns:2fr 1fr auto;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+    }
+    .count{
+      font-size:13px;
+      color:#556070;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .manage-list{
+      display:grid;
+      gap:12px;
+    }
+    .item{
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      padding:12px;
+    }
+    .item-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+    .item-title{
+      font-size:18px;
+      line-height:1.3;
+      font-weight:800;
+      margin:0;
+    }
+    .item-id{
+      font-size:12px;
+      color:#7a8492;
+    }
+    .item-body{
+      display:grid;
+      grid-template-columns:220px 1fr;
+      gap:12px;
+    }
+    .thumb{
+      width:100%;
+      aspect-ratio:4 / 3;
+      border-radius:8px;
+      object-fit:cover;
+      object-position:top center;
+      background:#d2d6dc;
+    }
+    .edit-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .edit-grid .full{
+      grid-column:1 / -1;
+    }
+    .item-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:8px;
+      flex-wrap:wrap;
+    }
+    .sub{
+      border:1px solid #c6ccd7;
+      border-radius:10px;
+      background:#fff;
+      color:#2a3340;
+      font-size:14px;
+      font-weight:700;
+      padding:8px 12px;
+      cursor:pointer;
+    }
+    .danger{
+      border-color:#e1a8a8;
+      color:#b13c3c;
+    }
+    .confirm{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      color:#4e5767;
+      font-weight:700;
+    }
+
+    @media (max-width: 900px){
+      h1{font-size:42px;}
+      .item-body{grid-template-columns:1fr;}
+      .edit-grid{grid-template-columns:1fr;}
+    }
+    @media (max-width: 640px){
+      h1{font-size:34px;}
+      .lead{font-size:16px;}
+      .tabs{gap:4px;}
+      .tab-btn{
+        font-size:14px;
+        padding:10px 12px;
+      }
+      .panel{padding:14px;}
+      .tag-grid{grid-template-columns:1fr 1fr;}
+      .filter-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-links">
+      <a class="top-link" href="./index.html">一覧ページへ</a>
+      <a class="top-link" href="./category.html">カテゴリページへ</a>
+    </div>
+
+    <h1>トッピング図鑑 <span>（登録画面）</span></h1>
+    <p class="lead">写真登録・検索・修正・削除をこの画面で行います。</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab-btn="register" type="button">写真を登録</button>
+      <button class="tab-btn" data-tab-btn="manage" type="button">検索・修正・削除</button>
+    </div>
+
+    <section class="panel active" data-tab-panel="register">
+      <h2>1) 写真を追加</h2>
+      <div id="dropzone" class="dropzone">
+        ここに写真をドラッグ＆ドロップ
+        <br />
+        またはクリックして選択（jpg/png/webp）
+      </div>
+      <input id="regFiles" type="file" accept=".jpg,.jpeg,.png,.webp" multiple hidden />
+      <ul id="fileList" class="file-list"></ul>
+
+      <h2 style="margin-top:20px;">2) 情報を入力</h2>
+      <div class="form-row">
+        <label for="regCategory">アイテムの種類</label>
+        <select id="regCategory">
+          <option value="">（登録済みアイテムから選択）</option>
+          <option value="__new__">（新しく入力）</option>
+        </select>
+      </div>
+      <div class="form-row" id="regNewCategoryRow" style="display:none;">
+        <label for="regNewCategory">新規の種類名（最大全角20文字）</label>
+        <input id="regNewCategory" type="text" maxlength="20" />
+      </div>
+      <div class="form-row">
+        <label for="regTitle">写真タイトル（最大全角40文字）</label>
+        <input id="regTitle" type="text" maxlength="40" />
+      </div>
+      <div class="form-row">
+        <label>ハッシュタグ（各最大全角30文字）</label>
+        <div class="tag-grid">
+          <input type="text" maxlength="30" placeholder="タグ1" data-reg-tag />
+          <input type="text" maxlength="30" placeholder="タグ2" data-reg-tag />
+          <input type="text" maxlength="30" placeholder="タグ3" data-reg-tag />
+          <input type="text" maxlength="30" placeholder="タグ4" data-reg-tag />
+          <input type="text" maxlength="30" placeholder="タグ5" data-reg-tag />
+        </div>
+        <p class="hint">入力内容は自動で「#」付きで保存されます。</p>
+      </div>
+      <button id="regSubmit" class="primary" type="button">登録する</button>
+      <p id="regMessage" class="note"></p>
+    </section>
+
+    <section class="panel" data-tab-panel="manage">
+      <h2>検索</h2>
+      <div class="filter-grid">
+        <div>
+          <label for="filterKeyword">キーワード（種類・タイトル・説明文）</label>
+          <input id="filterKeyword" type="search" placeholder="キーワードを入力" />
+        </div>
+        <div>
+          <label for="filterCategory">種類</label>
+          <select id="filterCategory">
+            <option value="">すべて</option>
+          </select>
+        </div>
+        <div class="count" id="resultCount">0件</div>
+      </div>
+      <div id="manageList" class="manage-list"></div>
+      <p id="manageMessage" class="note"></p>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      records: [],
+      categories: [],
+      selectedFiles: [],
+    };
+
+    const tabButtons = Array.from(document.querySelectorAll("[data-tab-btn]"));
+    const tabPanels = Array.from(document.querySelectorAll("[data-tab-panel]"));
+
+    const dropzone = document.getElementById("dropzone");
+    const regFiles = document.getElementById("regFiles");
+    const fileList = document.getElementById("fileList");
+    const regCategory = document.getElementById("regCategory");
+    const regNewCategoryRow = document.getElementById("regNewCategoryRow");
+    const regNewCategory = document.getElementById("regNewCategory");
+    const regTitle = document.getElementById("regTitle");
+    const regTags = Array.from(document.querySelectorAll("[data-reg-tag]"));
+    const regSubmit = document.getElementById("regSubmit");
+    const regMessage = document.getElementById("regMessage");
+
+    const filterKeyword = document.getElementById("filterKeyword");
+    const filterCategory = document.getElementById("filterCategory");
+    const resultCount = document.getElementById("resultCount");
+    const manageList = document.getElementById("manageList");
+    const manageMessage = document.getElementById("manageMessage");
+
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tab = btn.dataset.tabBtn;
+        tabButtons.forEach((x) => x.classList.toggle("active", x === btn));
+        tabPanels.forEach((panel) => {
+          panel.classList.toggle("active", panel.dataset.tabPanel === tab);
+        });
+      });
+    });
+
+    function zenkakuLen(s) {
+      return Array.from(String(s || "")).length;
+    }
+
+    function splitTags(description) {
+      const text = String(description || "").trim();
+      const tags = [];
+      const regex = /#([^\s#]+)/g;
+      let m = null;
+      while ((m = regex.exec(text)) !== null) {
+        tags.push(m[1] || "");
+      }
+      if (!tags.length && text) tags.push(text.replace(/^#/, "").trim());
+      while (tags.length < 5) tags.push("");
+      return tags.slice(0, 5);
+    }
+
+    function setMessage(el, text, type) {
+      el.textContent = text || "";
+      el.classList.remove("ok", "err");
+      if (type === "ok") el.classList.add("ok");
+      if (type === "err") el.classList.add("err");
+    }
+
+    function escapeHtml(s) {
+      return String(s || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function apiList() {
+      const res = await fetch("./api.php?action=list", { cache: "no-store" });
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || "一覧取得に失敗しました");
+      return json;
+    }
+
+    async function apiPost(action, formData) {
+      formData.append("action", action);
+      const res = await fetch("./api.php?action=" + encodeURIComponent(action), {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || "保存に失敗しました");
+      return json;
+    }
+
+    function refreshFileList() {
+      fileList.innerHTML = state.selectedFiles
+        .map((f) => `<li>${escapeHtml(f.name)}</li>`)
+        .join("");
+    }
+
+    function setSelectedFiles(fileListObj) {
+      state.selectedFiles = Array.from(fileListObj || []);
+      refreshFileList();
+    }
+
+    dropzone.addEventListener("click", () => regFiles.click());
+    regFiles.addEventListener("change", () => setSelectedFiles(regFiles.files));
+    dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropzone.classList.add("dragover");
+    });
+    dropzone.addEventListener("dragleave", () => {
+      dropzone.classList.remove("dragover");
+    });
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("dragover");
+      setSelectedFiles(e.dataTransfer.files);
+    });
+
+    regCategory.addEventListener("change", () => {
+      regNewCategoryRow.style.display = regCategory.value === "__new__" ? "" : "none";
+    });
+
+    function populateCategorySelectors() {
+      const options = state.categories
+        .map((cat) => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`)
+        .join("");
+      regCategory.innerHTML =
+        '<option value="">（登録済みアイテムから選択）</option>' +
+        options +
+        '<option value="__new__">（新しく入力）</option>';
+
+      const current = filterCategory.value;
+      filterCategory.innerHTML = '<option value="">すべて</option>' + options;
+      if (current && state.categories.includes(current)) {
+        filterCategory.value = current;
+      }
+    }
+
+    function readRegisterCategory() {
+      if (regCategory.value === "__new__") {
+        return String(regNewCategory.value || "").trim();
+      }
+      return String(regCategory.value || "").trim();
+    }
+
+    regSubmit.addEventListener("click", async () => {
+      try {
+        setMessage(regMessage, "", "");
+        const files = state.selectedFiles;
+        const category = readRegisterCategory();
+        const title = String(regTitle.value || "").trim();
+        const tags = regTags.map((x) => String(x.value || "").trim());
+
+        if (!files.length) throw new Error("画像を選択してください。");
+        if (!category) throw new Error("アイテムの種類を入力してください。");
+        if (zenkakuLen(category) > 20) throw new Error("種類は20文字以内です。");
+        if (!title) throw new Error("写真タイトルを入力してください。");
+        if (zenkakuLen(title) > 40) throw new Error("タイトルは40文字以内です。");
+        for (const t of tags) {
+          if (zenkakuLen(t) > 30) throw new Error("各タグは30文字以内です。");
+        }
+
+        regSubmit.disabled = true;
+        const fd = new FormData();
+        fd.append("category", category);
+        fd.append("title", title);
+        tags.forEach((tag) => fd.append("tags[]", tag));
+        files.forEach((f) => fd.append("images[]", f));
+        const res = await apiPost("create", fd);
+
+        setMessage(regMessage, res.message || "登録しました。", "ok");
+        regTitle.value = "";
+        regTags.forEach((x) => { x.value = ""; });
+        regFiles.value = "";
+        state.selectedFiles = [];
+        refreshFileList();
+        await refreshData();
+      } catch (e) {
+        setMessage(regMessage, e.message || "登録に失敗しました。", "err");
+      } finally {
+        regSubmit.disabled = false;
+      }
+    });
+
+    function renderManageList() {
+      const q = String(filterKeyword.value || "").trim().toLowerCase();
+      const cat = String(filterCategory.value || "").trim();
+
+      const filtered = state.records.filter((r) => {
+        if (cat && String(r.category || "") !== cat) return false;
+        if (!q) return true;
+        const source = `${r.category || ""} ${r.title || ""} ${r.description || ""} ${r.ocr_text || ""}`.toLowerCase();
+        return source.includes(q);
+      });
+
+      resultCount.textContent = `${filtered.length}件`;
+      if (!filtered.length) {
+        manageList.innerHTML = '<div class="item"><p class="item-title">該当データがありません。</p></div>';
+        return;
+      }
+
+      manageList.innerHTML = filtered.map((r) => {
+        const tags = splitTags(r.description || "");
+        const options = Array.from(new Set([r.category || "", ...state.categories]))
+          .filter(Boolean)
+          .map((catName) => {
+            const selected = catName === r.category ? "selected" : "";
+            return `<option value="${escapeHtml(catName)}" ${selected}>${escapeHtml(catName)}</option>`;
+          })
+          .join("");
+        return `
+          <article class="item" data-id="${escapeHtml(r.id)}">
+            <div class="item-head">
+              <p class="item-title">【${escapeHtml(r.category)}】${escapeHtml(r.title)}</p>
+              <span class="item-id">ID: ${escapeHtml(r.id)}</span>
+            </div>
+            <div class="item-body">
+              <img class="thumb" src="${escapeHtml(r.path)}" alt="${escapeHtml(r.title)}">
+              <div class="edit-grid">
+                <div>
+                  <label>種類（編集）</label>
+                  <select data-edit-cat-select>
+                    ${options}
+                    <option value="__new__">（新しく入力）</option>
+                  </select>
+                </div>
+                <div data-edit-cat-new-row style="display:none;">
+                  <label>新規の種類名（最大全角20文字）</label>
+                  <input type="text" maxlength="20" data-edit-cat-new />
+                </div>
+                <div class="full">
+                  <label>タイトル（最大全角40文字）</label>
+                  <input type="text" maxlength="40" value="${escapeHtml(r.title)}" data-edit-title />
+                </div>
+                <div class="full">
+                  <label>ハッシュタグ（各最大全角30文字）</label>
+                  <div class="tag-grid">
+                    <input type="text" maxlength="30" value="${escapeHtml(tags[0])}" data-edit-tag />
+                    <input type="text" maxlength="30" value="${escapeHtml(tags[1])}" data-edit-tag />
+                    <input type="text" maxlength="30" value="${escapeHtml(tags[2])}" data-edit-tag />
+                    <input type="text" maxlength="30" value="${escapeHtml(tags[3])}" data-edit-tag />
+                    <input type="text" maxlength="30" value="${escapeHtml(tags[4])}" data-edit-tag />
+                  </div>
+                </div>
+                <div class="full">
+                  <label>写真を差し替える（任意）</label>
+                  <input type="file" accept=".jpg,.jpeg,.png,.webp" data-edit-file />
+                </div>
+              </div>
+            </div>
+            <div class="item-actions">
+              <button class="sub" type="button" data-update-btn>更新する</button>
+              <label class="confirm">
+                <input type="checkbox" data-delete-confirm />
+                削除を確定する
+              </label>
+              <button class="sub danger" type="button" data-delete-btn>削除する</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      bindItemEvents();
+    }
+
+    function bindItemEvents() {
+      manageList.querySelectorAll("[data-edit-cat-select]").forEach((sel) => {
+        sel.addEventListener("change", () => {
+          const item = sel.closest(".item");
+          const row = item.querySelector("[data-edit-cat-new-row]");
+          row.style.display = sel.value === "__new__" ? "" : "none";
+        });
+      });
+
+      manageList.querySelectorAll("[data-update-btn]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const item = btn.closest(".item");
+          const id = item.dataset.id || "";
+          const catSelect = item.querySelector("[data-edit-cat-select]");
+          const catNew = item.querySelector("[data-edit-cat-new]");
+          const titleInput = item.querySelector("[data-edit-title]");
+          const tagInputs = Array.from(item.querySelectorAll("[data-edit-tag]"));
+          const fileInput = item.querySelector("[data-edit-file]");
+
+          const category = catSelect.value === "__new__"
+            ? String(catNew.value || "").trim()
+            : String(catSelect.value || "").trim();
+          const title = String(titleInput.value || "").trim();
+          const tags = tagInputs.map((x) => String(x.value || "").trim());
+
+          try {
+            setMessage(manageMessage, "", "");
+            if (!category) throw new Error("種類を入力してください。");
+            if (zenkakuLen(category) > 20) throw new Error("種類は20文字以内です。");
+            if (!title) throw new Error("タイトルを入力してください。");
+            if (zenkakuLen(title) > 40) throw new Error("タイトルは40文字以内です。");
+            for (const t of tags) {
+              if (zenkakuLen(t) > 30) throw new Error("各タグは30文字以内です。");
+            }
+
+            const fd = new FormData();
+            fd.append("id", id);
+            fd.append("category", category);
+            fd.append("title", title);
+            tags.forEach((t) => fd.append("tags[]", t));
+            if (fileInput.files && fileInput.files[0]) {
+              fd.append("image", fileInput.files[0]);
+            }
+            const res = await apiPost("update", fd);
+            setMessage(manageMessage, res.message || "更新しました。", "ok");
+            await refreshData();
+          } catch (e) {
+            setMessage(manageMessage, e.message || "更新に失敗しました。", "err");
+          }
+        });
+      });
+
+      manageList.querySelectorAll("[data-delete-btn]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const item = btn.closest(".item");
+          const id = item.dataset.id || "";
+          const confirm = item.querySelector("[data-delete-confirm]");
+          if (!confirm.checked) {
+            setMessage(manageMessage, "削除前に「削除を確定する」にチェックしてください。", "err");
+            return;
+          }
+          try {
+            const fd = new FormData();
+            fd.append("id", id);
+            const res = await apiPost("delete", fd);
+            setMessage(manageMessage, res.message || "削除しました。", "ok");
+            await refreshData();
+          } catch (e) {
+            setMessage(manageMessage, e.message || "削除に失敗しました。", "err");
+          }
+        });
+      });
+    }
+
+    async function refreshData() {
+      const json = await apiList();
+      state.records = Array.isArray(json.records) ? json.records : [];
+      state.categories = Array.isArray(json.categories) ? json.categories : [];
+      populateCategorySelectors();
+      renderManageList();
+    }
+
+    filterKeyword.addEventListener("input", renderManageList);
+    filterCategory.addEventListener("change", renderManageList);
+
+    refreshData().catch((e) => {
+      setMessage(regMessage, e.message || "初期化に失敗しました。", "err");
+      setMessage(manageMessage, e.message || "初期化に失敗しました。", "err");
+    });
+  </script>
+</body>
+</html>
